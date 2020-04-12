@@ -1,17 +1,8 @@
 import numpy
 
-def check_valid_matrix(R):
-    for i in range(len(R)):
-        for j in range(len(R[0])):
-            if(R[i][j].round() < 0 or R[i][j].round() > 5):
-                return False
-    return True
-
-
-def matrix_factorization(R, K, beta=0.01):
+def matrix_factorization(R, K, steps=1000, beta=0.004):
     W = numpy.random.rand(len(R),K)
-    H = numpy.random.rand(len(R[0]),K)
-    H = H.T
+    H = numpy.random.rand(K, len(R[0]))
     Ret = R
     step = 0
     stop = False
@@ -25,7 +16,7 @@ def matrix_factorization(R, K, beta=0.01):
                         H[k][j] += 2 * beta * (eij * W[i][k])
         step += 1
         Ret = numpy.dot(W, H)
-        if(step > 500):
+        if(step > steps):
             stop = True
     return Ret
 
@@ -34,8 +25,12 @@ with open('input.txt', 'r') as f:
 R = numpy.array(R)
 print("Rating array:")
 print(R)
-K = 3
+K = 4
 
-nR = matrix_factorization(R, K).round()
+nR = matrix_factorization(R, K, 5000, 0.0002).round()
+
+for i in range(len(nR)):
+    for j in range(len(nR[0])):
+        if(nR[i][j] > 5): nR[i][j] = 5
 print("Result: ")
 print(nR)
